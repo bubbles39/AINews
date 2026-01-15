@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-"""AIニュース取得スクリプト"""
+"""AIニュース取得スクリプト（日英併記版）"""
 
 import feedparser
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader
+from deep_translator import GoogleTranslator
 import os
+import re
+import time
 
 # AIニュース RSSフィード一覧
 RSS_FEEDS = [
@@ -34,6 +37,20 @@ RSS_FEEDS = [
     },
 ]
 
+translator = GoogleTranslator(source='en', target='ja')
+
+
+def translate_text(text: str) -> str:
+    """英語を日本語に翻訳"""
+    if not text:
+        return ""
+    try:
+        time.sleep(0.5)  # API制限対策
+        return translator.translate(text)
+    except Exception as e:
+        print(f"    翻訳エラー: {e}")
+        return ""
+
 
 def fetch_feed(feed_info: dict) -> list:
     """RSSフィードから記事を取得"""
@@ -49,17 +66,22 @@ def fetch_feed(feed_info: dict) -> list:
 
             summary = ""
             if hasattr(entry, "summary"):
-                # HTMLタグを簡易的に除去
                 summary = entry.summary
-                import re
                 summary = re.sub(r'<[^>]+>', '', summary)
                 summary = summary[:200] + "..." if len(summary) > 200 else summary
 
+            # 翻訳
+            print(f"    翻訳中: {entry.title[:30]}...")
+            title_ja = translate_text(entry.title)
+            summary_ja = translate_text(summary) if summary else ""
+
             articles.append({
                 "title": entry.title,
+                "title_ja": title_ja,
                 "link": entry.link,
                 "published": published,
                 "summary": summary,
+                "summary_ja": summary_ja,
                 "source": feed_info["name"],
             })
     except Exception as e:

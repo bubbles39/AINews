@@ -18,8 +18,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout main
         uses: actions/checkout@v4
+
+      - name: Restore archives from gh-pages
+        run: |
+          git fetch origin gh-pages --depth=1 || true
+          if git show-ref --verify --quiet refs/remotes/origin/gh-pages; then
+            git checkout origin/gh-pages -- archives/ archives.json 2>/dev/null || true
+            if [ -d "archives" ]; then
+              mkdir -p output
+              mv archives output/
+            fi
+            if [ -f "archives.json" ]; then
+              mkdir -p output
+              mv archives.json output/
+            fi
+          fi
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -37,4 +52,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./output
-          force_orphan: true
+          keep_files: true

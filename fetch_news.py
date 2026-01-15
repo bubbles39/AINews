@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AIニュース取得スクリプト（日英併記版）"""
+"""AIニュース取得スクリプト（日英併記版・アーカイブ対応）"""
 
 import feedparser
 from datetime import datetime, timedelta
@@ -8,6 +8,7 @@ from deep_translator import GoogleTranslator
 import os
 import re
 import time
+import json
 
 # 過去何時間以内の記事を取得するか
 HOURS_LIMIT = 48
@@ -102,6 +103,22 @@ def fetch_feed(feed_info: dict) -> list:
     return articles
 
 
+def load_archives(output_dir: str) -> list:
+    """過去のアーカイブ一覧を読み込む"""
+    archives_file = os.path.join(output_dir, "archives.json")
+    if os.path.exists(archives_file):
+        with open(archives_file, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
+
+
+def save_archives(output_dir: str, archives: list):
+    """アーカイブ一覧を保存"""
+    archives_file = os.path.join(output_dir, "archives.json")
+    with open(archives_file, "w", encoding="utf-8") as f:
+        json.dump(archives, f, ensure_ascii=False, indent=2)
+
+
 def main():
     """メイン処理"""
     print("AIニュースを取得中...")
@@ -115,19 +132,49 @@ def main():
     # 日付でソート（新しい順）
     all_articles.sort(key=lambda x: x["published"], reverse=True)
 
-    # HTMLを生成
+    # パス設定
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    env = Environment(loader=FileSystemLoader(os.path.join(script_dir, "templates")))
-    template = env.get_template("index.html")
+    output_dir = os.path.join(script_dir, "output")
+    archives_dir = os.path.join(output_dir, "archives")
+    os.makedirs(archives_dir, exist_ok=True)
 
-    html = template.render(
+    # テンプレート読み込み
+    env = Environment(loader=FileSystemLoader(os.path.join(script_dir, "templates")))
+
+    today = datetime.now().strftime("%Y-%m-%d")
+    updated_at = datetime.now().strftime("%Y-%m-%d %H:%M")
+
+    # アーカイブ一覧を読み込み・更新
+    archives = load_archives(output_dir)
+    if today not in archives:
+        archives.insert(0, today)  # 最新を先頭に
+    # 最大30日分保持
+    archives = archives[:30]
+    save_archives(output_dir, archives)
+
+    # 今日のアーカイブを保存
+    if all_articles:
+        archive_template = env.get_template("archive.html")
+        archive_html = archive_template.render(
+            articles=all_articles,
+            date=today,
+            total_count=len(all_articles),
+        )
+        archive_path = os.path.join(archives_dir, f"{today}.html")
+        with open(archive_path, "w", encoding="utf-8") as f:
+            f.write(archive_html)
+        print(f"アーカイブ保存: {archive_path}")
+
+    # メインページ（index.html）を生成
+    index_template = env.get_template("index.html")
+    html = index_template.render(
         articles=all_articles,
-        updated_at=datetime.now().strftime("%Y-%m-%d %H:%M"),
+        updated_at=updated_at,
         total_count=len(all_articles),
+        archives=archives,
     )
 
-    # 出力
-    output_path = os.path.join(script_dir, "output", "index.html")
+    output_path = os.path.join(output_dir, "index.html")
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(html)
 

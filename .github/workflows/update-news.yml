@@ -5,6 +5,8 @@ on:
     # 毎朝6時(JST)に実行 = UTC 21:00
     - cron: '0 21 * * *'
   workflow_dispatch:  # 手動実行も可能
+  push:
+    branches: [main]  # mainへのpush時も実行
 
 permissions:
   contents: write

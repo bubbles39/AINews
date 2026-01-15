@@ -2,12 +2,15 @@
 """AIニュース取得スクリプト（日英併記版）"""
 
 import feedparser
-from datetime import datetime
+from datetime import datetime, timedelta
 from jinja2 import Environment, FileSystemLoader
 from deep_translator import GoogleTranslator
 import os
 import re
 import time
+
+# 過去何時間以内の記事を取得するか
+HOURS_LIMIT = 48
 
 # AIニュース RSSフィード一覧
 RSS_FEEDS = [
@@ -53,16 +56,25 @@ def translate_text(text: str) -> str:
 
 
 def fetch_feed(feed_info: dict) -> list:
-    """RSSフィードから記事を取得"""
+    """RSSフィードから記事を取得（日付フィルター適用）"""
     articles = []
+    cutoff_time = datetime.now() - timedelta(hours=HOURS_LIMIT)
+
     try:
         feed = feedparser.parse(feed_info["url"])
-        for entry in feed.entries[:5]:  # 各ソースから最大5記事
-            published = ""
+        for entry in feed.entries[:10]:  # 各ソースから最大10記事をチェック
+            # 日付を取得
+            published_dt = None
             if hasattr(entry, "published_parsed") and entry.published_parsed:
-                published = datetime(*entry.published_parsed[:6]).strftime("%Y-%m-%d")
+                published_dt = datetime(*entry.published_parsed[:6])
             elif hasattr(entry, "updated_parsed") and entry.updated_parsed:
-                published = datetime(*entry.updated_parsed[:6]).strftime("%Y-%m-%d")
+                published_dt = datetime(*entry.updated_parsed[:6])
+
+            # 日付がない、または古い記事はスキップ
+            if not published_dt or published_dt < cutoff_time:
+                continue
+
+            published = published_dt.strftime("%Y-%m-%d")
 
             summary = ""
             if hasattr(entry, "summary"):

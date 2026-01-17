@@ -47,6 +47,10 @@ jobs:
       - name: Fetch news
         run: python fetch_news.py
 
+      - name: Wait 5 minutes
+        run: sleep 300
+        if: github.event == 'schedule'  # schedule実行時のみ待機
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:

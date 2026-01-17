@@ -2,13 +2,16 @@
 """AIニュース取得スクリプト（日英併記版・アーカイブ対応）"""
 
 import feedparser
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from jinja2 import Environment, FileSystemLoader
 from deep_translator import GoogleTranslator
 import os
 import re
 import time
 import json
+
+# 日本標準時 (JST = UTC+9)
+JST = timezone(timedelta(hours=9))
 
 # 過去何時間以内の記事を取得するか
 HOURS_LIMIT = 48
@@ -59,17 +62,17 @@ def translate_text(text: str) -> str:
 def fetch_feed(feed_info: dict) -> list:
     """RSSフィードから記事を取得（日付フィルター適用）"""
     articles = []
-    cutoff_time = datetime.now() - timedelta(hours=HOURS_LIMIT)
+    cutoff_time = datetime.now(JST) - timedelta(hours=HOURS_LIMIT)
 
     try:
         feed = feedparser.parse(feed_info["url"])
         for entry in feed.entries[:10]:  # 各ソースから最大10記事をチェック
-            # 日付を取得
+            # 日付を取得（UTC として解釈して JST に変換）
             published_dt = None
             if hasattr(entry, "published_parsed") and entry.published_parsed:
-                published_dt = datetime(*entry.published_parsed[:6])
+                published_dt = datetime(*entry.published_parsed[:6], tzinfo=timezone.utc).astimezone(JST)
             elif hasattr(entry, "updated_parsed") and entry.updated_parsed:
-                published_dt = datetime(*entry.updated_parsed[:6])
+                published_dt = datetime(*entry.updated_parsed[:6], tzinfo=timezone.utc).astimezone(JST)
 
             # 日付がない、または古い記事はスキップ
             if not published_dt or published_dt < cutoff_time:
@@ -141,8 +144,8 @@ def main():
     # テンプレート読み込み
     env = Environment(loader=FileSystemLoader(os.path.join(script_dir, "templates")))
 
-    today = datetime.now().strftime("%Y-%m-%d")
-    updated_at = datetime.now().strftime("%Y-%m-%d %H:%M")
+    today = datetime.now(JST).strftime("%Y-%m-%d")
+    updated_at = datetime.now(JST).strftime("%Y-%m-%d %H:%M")
 
     # アーカイブ一覧を読み込み・更新
     archives = load_archives(output_dir)

@@ -9,6 +9,8 @@ import os
 import re
 import time
 import json
+import requests
+from bs4 import BeautifulSoup
 
 # 日本標準時 (JST = UTC+9)
 JST = timezone(timedelta(hours=9))
@@ -45,6 +47,48 @@ RSS_FEEDS = [
 ]
 
 translator = GoogleTranslator(source='en', target='ja')
+
+
+def fetch_article_image(url: str) -> str:
+    """記事ページから画像を取得（OGP画像を優先）"""
+    try:
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        # OGP画像を優先的に取得
+        og_image = soup.find('meta', property='og:image')
+        if og_image and og_image.get('content'):
+            return og_image['content']
+
+        # Twitter画像メタタグを確認
+        twitter_image = soup.find('meta', attrs={'name': 'twitter:image'})
+        if twitter_image and twitter_image.get('content'):
+            return twitter_image['content']
+
+        # 記事内の最初の画像を取得
+        article_img = soup.find('article')
+        if article_img:
+            img = article_img.find('img')
+            if img and img.get('src'):
+                return img['src']
+
+        # それでもなければページ内の最初の画像
+        first_img = soup.find('img')
+        if first_img and first_img.get('src'):
+            src = first_img['src']
+            # 小さいアイコンやロゴをスキップ
+            if 'logo' not in src.lower() and 'icon' not in src.lower():
+                return src
+
+        return ""
+    except Exception as e:
+        print(f"    画像取得エラー ({url[:50]}...): {e}")
+        return ""
 
 
 def translate_text(text: str) -> str:
@@ -87,7 +131,12 @@ def fetch_feed(feed_info: dict) -> list:
                 summary = re.sub(r'<[^>]+>', '', summary)
                 summary = summary[:200] + "..." if len(summary) > 200 else summary
 
-            # サムネイル画像を取得
+            # 翻訳
+            print(f"    翻訳中: {entry.title[:30]}...")
+            title_ja = translate_text(entry.title)
+            summary_ja = translate_text(summary) if summary else ""
+
+            # サムネイル画像を取得（RSSフィード→記事ページの順で試す）
             thumbnail = ""
             if hasattr(entry, "media_thumbnail") and entry.media_thumbnail:
                 thumbnail = entry.media_thumbnail[0]["url"]
@@ -99,10 +148,10 @@ def fetch_feed(feed_info: dict) -> list:
                         thumbnail = enclosure.get("href", "")
                         break
 
-            # 翻訳
-            print(f"    翻訳中: {entry.title[:30]}...")
-            title_ja = translate_text(entry.title)
-            summary_ja = translate_text(summary) if summary else ""
+            # RSSフィードから画像が取得できなかった場合、記事ページから取得
+            if not thumbnail:
+                print(f"      画像取得中: {entry.link[:50]}...")
+                thumbnail = fetch_article_image(entry.link)
 
             # 記事の新しさを判定（6時間以内なら新着）
             is_new = (datetime.now(JST) - published_dt).total_seconds() < 6 * 3600

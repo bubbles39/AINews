@@ -79,6 +79,7 @@ def fetch_feed(feed_info: dict) -> list:
                 continue
 
             published = published_dt.strftime("%Y-%m-%d")
+            published_time = published_dt.strftime("%m/%d") + f"({['月','火','水','木','金','土','日'][published_dt.weekday()]}) {published_dt.strftime('%H:%M')}"
 
             summary = ""
             if hasattr(entry, "summary"):
@@ -86,19 +87,37 @@ def fetch_feed(feed_info: dict) -> list:
                 summary = re.sub(r'<[^>]+>', '', summary)
                 summary = summary[:200] + "..." if len(summary) > 200 else summary
 
+            # サムネイル画像を取得
+            thumbnail = ""
+            if hasattr(entry, "media_thumbnail") and entry.media_thumbnail:
+                thumbnail = entry.media_thumbnail[0]["url"]
+            elif hasattr(entry, "media_content") and entry.media_content:
+                thumbnail = entry.media_content[0]["url"]
+            elif hasattr(entry, "enclosures") and entry.enclosures:
+                for enclosure in entry.enclosures:
+                    if "image" in enclosure.get("type", ""):
+                        thumbnail = enclosure.get("href", "")
+                        break
+
             # 翻訳
             print(f"    翻訳中: {entry.title[:30]}...")
             title_ja = translate_text(entry.title)
             summary_ja = translate_text(summary) if summary else ""
+
+            # 記事の新しさを判定（6時間以内なら新着）
+            is_new = (datetime.now(JST) - published_dt).total_seconds() < 6 * 3600
 
             articles.append({
                 "title": entry.title,
                 "title_ja": title_ja,
                 "link": entry.link,
                 "published": published,
+                "published_time": published_time,
                 "summary": summary,
                 "summary_ja": summary_ja,
                 "source": feed_info["name"],
+                "thumbnail": thumbnail,
+                "is_new": is_new,
             })
     except Exception as e:
         print(f"Error fetching {feed_info['name']}: {e}")

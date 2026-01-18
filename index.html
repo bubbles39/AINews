@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI News Daily</title>
+    <title>AI News</title>
     <style>
         * {
             box-sizing: border-box;
@@ -12,179 +12,224 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', YuGothic, Meiryo, sans-serif;
             background: #f5f5f5;
             color: #333;
-            line-height: 1.6;
+            line-height: 1.5;
         }
 
         header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
+            background: #fff;
+            border-bottom: 4px solid #e74c3c;
+            padding: 12px 16px;
             position: sticky;
             top: 0;
             z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         header h1 {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
+            font-size: 1.1rem;
+            color: #333;
+            font-weight: 700;
         }
 
         .meta {
-            font-size: 0.85rem;
-            opacity: 0.9;
+            font-size: 0.75rem;
+            color: #999;
+            margin-top: 2px;
         }
 
         main {
-            max-width: 800px;
+            max-width: 1080px;
             margin: 0 auto;
-            padding: 15px;
+            background: #fff;
         }
 
         .archives-section {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            background: #fafafa;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 12px 16px;
         }
 
         .archives-section h2 {
-            font-size: 1rem;
-            color: #667eea;
-            margin-bottom: 12px;
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: 600;
         }
 
         .archive-links {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 6px;
         }
 
         .archive-link {
-            background: #f0f0f0;
-            color: #333;
+            background: #fff;
+            color: #666;
             text-decoration: none;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            transition: background 0.2s;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            border: 1px solid #e0e0e0;
+            transition: all 0.2s;
         }
 
         .archive-link:hover {
-            background: #667eea;
-            color: white;
+            background: #f0f0f0;
+            border-color: #ccc;
         }
 
         .archive-link.today {
-            background: #667eea;
+            background: #e74c3c;
             color: white;
+            border-color: #e74c3c;
         }
 
         .article {
-            background: white;
-            border-radius: 12px;
+            display: flex;
             padding: 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-
-        .article:active {
-            background: #f9f9f9;
-        }
-
-        .source {
-            font-size: 0.75rem;
-            color: #667eea;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .title-en {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: #1a1a1a;
+            border-bottom: 1px solid #f0f0f0;
             text-decoration: none;
-            display: block;
-            margin-bottom: 4px;
+            color: inherit;
+            transition: background 0.2s;
         }
 
-        .title-en:hover {
-            color: #667eea;
+        .article:hover {
+            background: #fafafa;
         }
 
-        .title-ja {
-            font-size: 0.9rem;
-            color: #555;
-            margin-bottom: 10px;
-            padding-left: 8px;
-            border-left: 3px solid #667eea;
+        .article-thumbnail {
+            flex-shrink: 0;
+            width: 120px;
+            height: 90px;
+            margin-right: 12px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
         }
 
-        .summary-en {
-            font-size: 0.85rem;
-            color: #666;
-            margin-bottom: 4px;
+        .article-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
-        .summary-ja {
-            font-size: 0.85rem;
-            color: #888;
-            margin-bottom: 8px;
-            padding-left: 8px;
-            border-left: 2px solid #ddd;
+        .article-thumbnail.no-image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 0.7rem;
+            text-align: center;
+            padding: 8px;
         }
 
-        .date {
+        .article-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .article-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .article-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             font-size: 0.8rem;
             color: #999;
+            margin-top: 8px;
+        }
+
+        .article-comments {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .article-comments::before {
+            content: "💬";
+            font-size: 0.9rem;
+        }
+
+        .article-time {
+            color: #999;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-new {
+            background: #ff9800;
+            color: white;
+        }
+
+        .badge-hot {
+            background: #e74c3c;
+            color: white;
         }
 
         .no-articles {
-            background: white;
-            border-radius: 12px;
-            padding: 40px 20px;
+            padding: 60px 20px;
             text-align: center;
             color: #999;
+            font-size: 0.9rem;
         }
 
         footer {
+            background: #fafafa;
             text-align: center;
-            padding: 30px;
+            padding: 24px;
             color: #999;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
+            border-top: 1px solid #e0e0e0;
         }
 
         @media (max-width: 600px) {
-            header {
-                padding: 15px;
+            .article-thumbnail {
+                width: 100px;
+                height: 75px;
             }
-            header h1 {
-                font-size: 1.3rem;
+
+            .article-title {
+                font-size: 0.9rem;
             }
-            main {
-                padding: 10px;
-            }
-            .article, .archives-section {
-                padding: 14px;
-                border-radius: 10px;
+
+            .article-meta {
+                font-size: 0.75rem;
             }
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>AI News Daily</h1>
-        <div class="meta">2026-01-18 08:50 更新 | 22件</div>
+        <h1>AI News</h1>
+        <div class="meta">2026-01-18 09:29 更新 | 20件</div>
     </header>
 
     <main>
         
         <section class="archives-section">
-            <h2>過去のニュース</h2>
+            <h2>📅 過去のニュース</h2>
             <div class="archive-links">
                 
                 
@@ -209,385 +254,331 @@
 
         
         
-        <article class="article">
-            <div class="source">The Verge - AI</div>
-            <a href="https://www.theverge.com/news/863620/data-centers-ai-power-auction-trump" class="title-en" target="_blank" rel="noopener">
-                Trump and Mid-Atlantic governors want tech companies to pay for new power plants
-            </a>
-            
-            <div class="title-ja">トランプ大統領と中部大西洋岸知事はテクノロジー企業に新しい発電所の費用を負担してもらいたい</div>
-            
-            
-            <p class="summary-en">The Trump administration and a bipartisan group of governors are pressuring the PJM Interconnection, the biggest electricity market in the US, to hold a power auction meant to spur a massive buildout ...</p>
-            
-            
-            <p class="summary-ja">トランプ政権と超党派の知事グループは、米国最大の電力市場であるPJMインターコネクションに対し、大規模な電力増強を促す電力オークションを開催するよう圧力をかけている。</p>
-            
-            <div class="date">2026-01-17</div>
-        </article>
+        <a href="https://www.theverge.com/news/863620/data-centers-ai-power-auction-trump" class="article" target="_blank" rel="noopener">
+            <div class="article-thumbnail no-image">
+                
+                <span>The Verge - AI</span>
+                
+            </div>
+            <div class="article-content">
+                <div class="article-title">トランプ大統領と中部大西洋岸知事はテクノロジー企業に新しい発電所の費用を負担してもらいたい</div>
+                <div class="article-meta">
+                    <span class="article-comments">126</span>
+                    <span class="article-time">01/17(土) 05:51</span>
+                    
+                </div>
+            </div>
+        </a>
         
-        <article class="article">
-            <div class="source">The Verge - AI</div>
-            <a href="https://www.theverge.com/news/863570/google-flow-ai-video-generator-workspace" class="title-en" target="_blank" rel="noopener">
-                Google brings its AI videomaker to Workspace users
-            </a>
-            
-            <div class="title-ja">Google が Workspace ユーザーに AI ビデオメーカーを提供</div>
-            
-            
-            <p class="summary-en">Google is expanding access to its AI videomaking tool. Launched last May, Flow was initially only available to Google AI Pro and AI Ultra subscribers, but now, those with Business, Enterprise, and Edu...</p>
-            
-            
-            <p class="summary-ja">Google は、AI 動画作成ツールへのアクセスを拡大しています。昨年 5 月にリリースされた Flow は、当初 Google AI Pro と AI Ultra のサブスクライバーのみが利用できましたが、現在は Business、Enterprise、Edu のサブスクリプション契約者のみが利用できます。</p>
-            
-            <div class="date">2026-01-17</div>
-        </article>
+        <a href="https://www.theverge.com/news/863570/google-flow-ai-video-generator-workspace" class="article" target="_blank" rel="noopener">
+            <div class="article-thumbnail no-image">
+                
+                <span>The Verge - AI</span>
+                
+            </div>
+            <div class="article-content">
+                <div class="article-title">Google が Workspace ユーザーに AI ビデオメーカーを提供</div>
+                <div class="article-meta">
+                    <span class="article-comments">163</span>
+                    <span class="article-time">01/17(土) 04:37</span>
+                    
+                </div>
+            </div>
+        </a>
         
-        <article class="article">
-            <div class="source">The Verge - AI</div>
-            <a href="https://www.theverge.com/news/863428/openai-chatgpt-shopping-ads-test" class="title-en" target="_blank" rel="noopener">
-                Ads are coming soon to ChatGPT, starting with shopping links
-            </a>
-            
-            <div class="title-ja">ショッピング リンクから始まる広告が間もなく ChatGPT に追加されます</div>
-            
-            
-            <p class="summary-en">ChatGPT will soon start showing you sponsored products or services if they're related to your conversation. In an announcement on Friday, OpenAI says it will start testing ads in the coming weeks for ...</p>
-            
-            
-            <p class="summary-ja">ChatGPT は、あなたの会話に関連するスポンサー付きの製品やサービスを間もなく表示し始めます。 OpenAIは金曜日の発表で、今後数週間以内に広告のテストを開始すると述べた。</p>
-            
-            <div class="date">2026-01-17</div>
-        </article>
+        <a href="https://www.theverge.com/news/863428/openai-chatgpt-shopping-ads-test" class="article" target="_blank" rel="noopener">
+            <div class="article-thumbnail no-image">
+                
+                <span>The Verge - AI</span>
+                
+            </div>
+            <div class="article-content">
+                <div class="article-title">ショッピング リンクから始まる広告が間もなく ChatGPT に追加されます</div>
+                <div class="article-meta">
+                    <span class="article-comments">200</span>
+                    <span class="article-time">01/17(土) 03:00</span>
+                    
+                </div>
+            </div>
+        </a>
         
-        <article class="article">
-            <div class="source">The Verge - AI</div>
-            <a href="https://www.theverge.com/news/863466/openai-chatgpt-go-global-release" class="title-en" target="_blank" rel="noopener">
-                OpenAI releases a cheaper ChatGPT subscription
-            </a>
-            
-            <div class="title-ja">OpenAI がより安価な ChatGPT サブスクリプションをリリース</div>
-            
-            
-            <p class="summary-en">OpenAI is expanding a low-cost subscription tier called ChatGPT Go to the US and the rest of the world. Go was released in India in August and later became available in another 170 countries prior to ...</p>
-            
-            
-            <p class="summary-ja">OpenAI は、ChatGPT Go と呼ばれる低コストのサブスクリプション層を米国およびその他の世界に拡大しています。 Go は 8 月にインドでリリースされ、その後、さらに 170 か国で利用できるようになりました。</p>
-            
-            <div class="date">2026-01-17</div>
-        </article>
+        <a href="https://www.theverge.com/news/863466/openai-chatgpt-go-global-release" class="article" target="_blank" rel="noopener">
+            <div class="article-thumbnail no-image">
+                
+                <span>The Verge - AI</span>
+                
+            </div>
+            <div class="article-content">
+                <div class="article-title">OpenAI がより安価な ChatGPT サブスクリプションをリリース</div>
+                <div class="article-meta">
+                    <span class="article-comments">237</span>
+                    <span class="article-time">01/17(土) 03:00</span>
+                    
+                </div>
+            </div>
+        </a>
         
-        <article class="article">
-            <div class="source">The Verge - AI</div>
-            <a href="https://www.theverge.com/news/863425/x-twitter-outage-january-16th-2026" class="title-en" target="_blank" rel="noopener">
-                X is still having issues following an hour-long outage on Friday
-            </a>
-            
-            <div class="title-ja">X は金曜日の 1 時間の停止の後、依然として問題を抱えています</div>
-            
-            
-            <p class="summary-en">On Friday morning, X and Grok went offline for users around the world on both the websites and apps. Outage reports began spiking on DownDetector around 10:00AM ET, while Cisco's ThousandEyes outage m...</p>
-            
-            
-            <p class="summary-ja">金曜日の朝、X と Grok は Web サイトとアプリの両方で世界中のユーザーに対してオフラインになりました。 DownDetector では東部時間午前 10 時頃から障害レポートが急増し始め、一方 Cisco の ThousandEyes では障害が発生しました。</p>
-            
-            <div class="date">2026-01-17</div>
-        </article>
+        <a href="https://www.theverge.com/news/863425/x-twitter-outage-january-16th-2026" class="article" target="_blank" rel="noopener">
+            <div class="article-thumbnail no-image">
+                
+                <span>The Verge - AI</span>
+                
+            </div>
+            <div class="article-content">
+                <div class="article-title">X は金曜日の 1 時間の停止の後、依然として問題を抱えています</div>
+                <div class="article-meta">
+                    <span class="article-comments">274</span>
+                    <span class="article-time">01/17(土) 02:09</span>
+                    
+                </div>
+            </div>
+        </a>
         
-        <article class="article">
-            <div class="source">The Verge - AI</div>
-            <a href="https://www.theverge.com/tech/863365/national-retail-federation-show-shopping-commerce-ai" class="title-en" target="_blank" rel="noopener">
-                I saw the future of retail, and it’s all AI
-            </a>
-            
-            <div class="title-ja">小売業の未来を見た、それはすべて AI です</div>
-            
-            
-            <p class="summary-en">Several people are gathered around a bleach blond man in a bright pink suit suspended in a clear plastic tube. With a microphone in front of him and a giant sign reading TALK TO ME placed above, "Mike...</p>
-            
-            
-            <p class="summary-ja">透明なプラスチックのチューブに吊るされた、明るいピンクのスーツを着た漂白剤の金髪の男の周りに数人の人が集まっています。彼の前にはマイクがあり、その上には「TALK TO ME」と書かれた巨大な看板が掲げられ、「マイク...</p>
-            
-            <div class="date">2026-01-17</div>
-        </article>
+        <a href="https://www.theverge.com/tech/863365/national-retail-federation-show-shopping-commerce-ai" class="article" target="_blank" rel="noopener">
+            <div class="article-thumbnail no-image">
+                
+                <span>The Verge - AI</span>
+                
+            </div>
+            <div class="article-content">
+                <div class="article-title">小売業の未来を見た、それはすべて AI です</div>
+                <div class="article-meta">
+                    <span class="article-comments">311</span>
+                    <span class="article-time">01/17(土) 01:37</span>
+                    
+                </div>
+            </div>
+        </a>
         
-        <article class="article">
-            <div class="source">TechCrunch - AI</div>
-            <a href="https://techcrunch.com/2026/01/17/musk-wants-up-to-134b-in-openai-lawsuit-despite-700b-fortune/" class="title-en" target="_blank" rel="noopener">
-                Musk wants up to $134B in OpenAI lawsuit, despite $700B fortune
-            </a>
-            
-            <div class="title-ja">マスク氏は7000億ドルの財産にもかかわらず、OpenAI訴訟で最大1340億ドルを要求している</div>
-            
-            
-            <p class="summary-en">Musk's legal team argues he should be compensated as an early startup investor who sees returns "many orders of magnitude greater" than his initial investment.</p>
-            
-            
-            <p class="summary-ja">マスク氏の弁護団は、初期投資よりも「何桁も大きい」利益が期待できる初期のスタートアップ投資家として補償されるべきだと主張している。</p>
-            
-            <div class="date">2026-01-17</div>
-        </article>
+        <a href="https://techcrunch.com/2026/01/17/musk-wants-up-to-134b-in-openai-lawsuit-despite-700b-fortune/" class="article" target="_blank" rel="noopener">
+            <div class="article-thumbnail no-image">
+                
+                <span>TechCrunch - AI</span>
+                
+            </div>
+            <div class="article-content">
+                <div class="article-title">マスク氏は7000億ドルの財産にもかかわらず、OpenAI訴訟で最大1340億ドルを要求している</div>
+                <div class="article-meta">
+                    <span class="article-comments">348</span>
+                    <span class="article-time">01/17(土) 17:26</span>
+                    
+                </div>
+            </div>
+        </a>
         
-        <article class="article">
-            <div class="source">TechCrunch - AI</div>
-            <a href="https://techcrunch.com/2026/01/16/ai-cloud-startup-runpod-hits-120m-in-arr-and-it-started-with-a-reddit-post/" class="title-en" target="_blank" rel="noopener">
-                AI cloud startup Runpod hits $120M in ARR — and it started with a Reddit post
-            </a>
-            
-            <div class="title-ja">AI クラウドのスタートアップ Runpod の ARR が 1 億 2,000 万ドルに達しました — それは Reddit への投稿から始まりました</div>
-            
-            
-            <p class="summary-en">Their startup journey is a wild example of how if you build it well and the timing is lucky, they will definitely come.</p>
-            
-            
-            <p class="summary-ja">彼らのスタートアップの旅は、うまく構築し、タイミングが幸運であれば、確実に実現するという素晴らしい例です。</p>
-            
-            <div class="date">2026-01-17</div>
-        </article>
+        <a href="https://techcrunch.com/2026/01/16/ai-cloud-startup-runpod-hits-120m-in-arr-and-it-started-with-a-reddit-post/" class="article" target="_blank" rel="noopener">
+            <div class="article-thumbnail no-image">
+                
+                <span>TechCrunch - AI</span>
+                
+            </div>
+            <div class="article-content">
+                <div class="article-title">AI クラウドのスタートアップ Runpod の ARR が 1 億 2,000 万ドルに達しました — それは Reddit への投稿から始まりました</div>
+                <div class="article-meta">
+                    <span class="article-comments">385</span>
+                    <span class="article-time">01/17(土) 08:46</span>
+                    
+                </div>
+            </div>
+        </a>
         
-        <article class="article">
-            <div class="source">TechCrunch - AI</div>
-            <a href="https://techcrunch.com/2026/01/16/california-ag-sends-musks-xai-a-cease-and-desist-order-over-sexual-deepfakes/" class="title-en" target="_blank" rel="noopener">
-                California AG sends Musk’s xAI a cease-and-desist order over sexual deepfakes
-            </a>
-            
-            <div class="title-ja">カリフォルニアAG、性的ディープフェイク問題でマスク氏のxAIに停止命令を送付</div>
-            
-            
-            <p class="summary-en">The flood of AI-generated sexual imagery has spurred concern from state and congressional officials alike.</p>
-            
-            
-            <p class="summary-ja">AIによって生成された性的画像の氾濫は、州当局と議会当局の両方から懸念を引き起こしている。</p>
-            
-            <div class="date">2026-01-17</div>
-        </article>
+        <a href="https://techcrunch.com/2026/01/16/california-ag-sends-musks-xai-a-cease-and-desist-order-over-sexual-deepfakes/" class="article" target="_blank" rel="noopener">
+            <div class="article-thumbnail no-image">
+                
+                <span>TechCrunch - AI</span>
+                
+            </div>
+            <div class="article-content">
+                <div class="article-title">カリフォルニアAG、性的ディープフェイク問題でマスク氏のxAIに停止命令を送付</div>
+                <div class="article-meta">
+                    <span class="article-comments">422</span>
+                    <span class="article-time">01/17(土) 08:21</span>
+                    
+                </div>
+            </div>
+        </a>
         
-        <article class="article">
-            <div class="source">TechCrunch - AI</div>
-            <a href="https://techcrunch.com/2026/01/16/from-openais-offices-to-a-deal-with-eli-lilly-how-chai-discovery-became-one-of-the-flashiest-names-in-ai-drug-development/" class="title-en" target="_blank" rel="noopener">
-                From OpenAI’s offices to a deal with Eli Lilly — how Chai Discovery became one of the flashiest names in AI drug development
-            </a>
-            
-            <div class="title-ja">OpenAI のオフィスからイーライリリーとの契約まで - Chai Discovery がどのようにして AI 医薬品開発で最も派手な名前の 1 つになったのか</div>
-            
-            
-            <p class="summary-en">The startup has partnered with Eli Lilly and enjoys the backing of some of Silicon Valley's most influential VCs.</p>
-            
-            
-            <p class="summary-ja">このスタートアップはイーライリリーと提携し、シリコンバレーで最も影響力のあるVCの支援を受けています。</p>
-            
-            <div class="date">2026-01-17</div>
-        </article>
+        <a href="https://techcrunch.com/2026/01/16/from-openais-offices-to-a-deal-with-eli-lilly-how-chai-discovery-became-one-of-the-flashiest-names-in-ai-drug-development/" class="article" target="_blank" rel="noopener">
+            <div class="article-thumbnail no-image">
+                
+                <span>TechCrunch - AI</span>
+                
+            </div>
+            <div class="article-content">
+                <div class="article-title">OpenAI のオフィスからイーライリリーとの契約まで - Chai Discovery がどのようにして AI 医薬品開発で最も派手な名前の 1 つになったのか</div>
+                <div class="article-meta">
+                    <span class="article-comments">459</span>
+                    <span class="article-time">01/17(土) 05:14</span>
+                    
+                </div>
+            </div>
+        </a>
         
-        <article class="article">
-            <div class="source">TechCrunch - AI</div>
-            <a href="https://techcrunch.com/2026/01/16/chatgpt-users-are-about-to-get-hit-with-targeted-ads/" class="title-en" target="_blank" rel="noopener">
-                ChatGPT users are about to get hit with targeted ads
-            </a>
-            
-            <div class="title-ja">ChatGPT ユーザーはターゲットを絞った広告にさらされようとしています</div>
-            
-            
-            <p class="summary-en">OpenAI says that users impacted by the ads will have some control over what they see.</p>
-            
-            
-            <p class="summary-ja">OpenAIによれば、広告の影響を受けるユーザーは、表示される内容をある程度制御できるようになるという。</p>
-            
-            <div class="date">2026-01-17</div>
-        </article>
+        <a href="https://techcrunch.com/2026/01/16/chatgpt-users-are-about-to-get-hit-with-targeted-ads/" class="article" target="_blank" rel="noopener">
+            <div class="article-thumbnail no-image">
+                
+                <span>TechCrunch - AI</span>
+                
+            </div>
+            <div class="article-content">
+                <div class="article-title">ChatGPT ユーザーはターゲットを絞った広告にさらされようとしています</div>
+                <div class="article-meta">
+                    <span class="article-comments">496</span>
+                    <span class="article-time">01/17(土) 04:54</span>
+                    
+                </div>
+            </div>
+        </a>
         
-        <article class="article">
-            <div class="source">TechCrunch - AI</div>
-            <a href="https://techcrunch.com/2026/01/16/trump-administration-wants-tech-companies-to-buy-15b-of-power-plants-they-may-not-use/" class="title-en" target="_blank" rel="noopener">
-                Trump administration wants tech companies to buy $15B of power plants they may not use
-            </a>
-            
-            <div class="title-ja">トランプ政権はテクノロジー企業に対し、使用しない可能性のある発電所を150億ドルで購入するよう求めている</div>
-            
-            
-            <p class="summary-en">In an attempt to alleviate rising electricity prices, the White House wants grid operator PJM to hold an auction for new generating capacity, and it wants tech companies to bid.</p>
-            
-            
-            <p class="summary-ja">電力価格の高騰を緩和するため、ホワイトハウスは送電網運営会社PJMに対し新たな発電容量のオークションを開催するよう求めており、ハイテク企業にも入札を求めている。</p>
-            
-            <div class="date">2026-01-17</div>
-        </article>
+        <a href="https://techcrunch.com/2026/01/16/trump-administration-wants-tech-companies-to-buy-15b-of-power-plants-they-may-not-use/" class="article" target="_blank" rel="noopener">
+            <div class="article-thumbnail no-image">
+                
+                <span>TechCrunch - AI</span>
+                
+            </div>
+            <div class="article-content">
+                <div class="article-title">トランプ政権はテクノロジー企業に対し、使用しない可能性のある発電所を150億ドルで購入するよう求めている</div>
+                <div class="article-meta">
+                    <span class="article-comments">533</span>
+                    <span class="article-time">01/17(土) 04:38</span>
+                    
+                </div>
+            </div>
+        </a>
         
-        <article class="article">
-            <div class="source">TechCrunch - AI</div>
-            <a href="https://techcrunch.com/video/the-ai-healthcare-gold-rush-is-here/" class="title-en" target="_blank" rel="noopener">
-                The AI healthcare gold rush is here
-            </a>
-            
-            <div class="title-ja">AIヘルスケアのゴールドラッシュが到来</div>
-            
-            
-            <p class="summary-en">AI companies are clustering around healthcare and fast.&#160; In just the past week, OpenAI bought health startup Torch, Anthropic launched Claude for healthcare, and Sam Altman-backed MergeLabs close...</p>
-            
-            
-            <p class="summary-ja">AI 企業はヘルスケアを中心に集積しており、急速に進んでいます。わずか先週で、OpenAI は健康関連スタートアップの Torch を買収し、Anthropic はヘルスケア向けの Claude を立ち上げ、そしてサム・アルトマンが支援する MergeLabs は閉鎖しました...</p>
-            
-            <div class="date">2026-01-17</div>
-        </article>
+        <a href="https://techcrunch.com/video/the-ai-healthcare-gold-rush-is-here/" class="article" target="_blank" rel="noopener">
+            <div class="article-thumbnail no-image">
+                
+                <span>TechCrunch - AI</span>
+                
+            </div>
+            <div class="article-content">
+                <div class="article-title">AIヘルスケアのゴールドラッシュが到来</div>
+                <div class="article-meta">
+                    <span class="article-comments">570</span>
+                    <span class="article-time">01/17(土) 03:57</span>
+                    
+                </div>
+            </div>
+        </a>
         
-        <article class="article">
-            <div class="source">TechCrunch - AI</div>
-            <a href="https://techcrunch.com/podcast/openai-and-anthropic-are-making-their-play-for-healthcare-and-were-not-surprised/" class="title-en" target="_blank" rel="noopener">
-                OpenAI and Anthropic are making their play for healthcare, and we’re not surprised
-            </a>
-            
-            <div class="title-ja">OpenAI と Anthropic は医療分野での取り組みを行っていますが、私たちは驚くことではありません</div>
-            
-            
-            <p class="summary-en">AI companies are clustering around healthcare, and fast.  In just the past week, OpenAI bought health startup Torch, Anthropic launched Claude for Health, and Sam Altman-backed Merge Labs closed a $25...</p>
-            
-            
-            <p class="summary-ja">AI 企業はヘルスケアを中心に急速に集積しています。  わずか先週で、OpenAI は健康関連スタートアップの Torch を買収し、Anthropic は Claude for Health を立ち上げ、そしてサム・アルトマンが支援する Merge Labs は 25 ドルで取引を終了しました。</p>
-            
-            <div class="date">2026-01-17</div>
-        </article>
+        <a href="https://techcrunch.com/podcast/openai-and-anthropic-are-making-their-play-for-healthcare-and-were-not-surprised/" class="article" target="_blank" rel="noopener">
+            <div class="article-thumbnail no-image">
+                
+                <span>TechCrunch - AI</span>
+                
+            </div>
+            <div class="article-content">
+                <div class="article-title">OpenAI と Anthropic は医療分野での取り組みを行っていますが、私たちは驚くことではありません</div>
+                <div class="article-meta">
+                    <span class="article-comments">607</span>
+                    <span class="article-time">01/17(土) 02:35</span>
+                    
+                </div>
+            </div>
+        </a>
         
-        <article class="article">
-            <div class="source">VentureBeat - AI</div>
-            <a href="https://venturebeat.com/technology/listen-labs-raises-usd69m-after-viral-billboard-hiring-stunt-to-scale-ai" class="title-en" target="_blank" rel="noopener">
-                Listen Labs raises $69M after viral billboard hiring stunt to scale AI customer interviews
-            </a>
-            
-            <div class="title-ja">AI顧客インタビューを拡大するためのバイラル看板採用スタントでListen Labsが6,900万ドルを調達</div>
-            
-            
-            <p class="summary-en">Alfred Wahlforss was running out of options. His startup, Listen Labs, needed to hire over 100 engineers, but competing against Mark Zuckerberg&#x27;s $100 million offers seemed impossible. So he spen...</p>
-            
-            
-            <p class="summary-ja">アルフレッド・ワールフォルスには選択肢がなくなっていた。彼のスタートアップ、Listen Labs は 100 人以上のエンジニアを雇用する必要がありましたが、マーク ザッカーバーグの 1 億ドルのオファーに対抗するのは不可能に見えました。それで彼は過ごしました...</p>
-            
-            <div class="date">2026-01-16</div>
-        </article>
+        <a href="https://venturebeat.com/technology/listen-labs-raises-usd69m-after-viral-billboard-hiring-stunt-to-scale-ai" class="article" target="_blank" rel="noopener">
+            <div class="article-thumbnail ">
+                
+                <img src="https://images.ctfassets.net/jdtwqhzvc2n1/4gD12ThOmNHZuosqC4xCTz/277b1e8968da602108a29fae2eaca440/nuneybits_Vector_art_of_billboard_with_cryptic_code_dbe5b0ff-7644-45e6-a1ca-4a5dceeff986.webp?w=300&q=30" alt="AI顧客インタビューを拡大するためのバイラル看板採用スタントでListen Labsが6,900万ドルを調達" loading="lazy">
+                
+            </div>
+            <div class="article-content">
+                <div class="article-title">AI顧客インタビューを拡大するためのバイラル看板採用スタントでListen Labsが6,900万ドルを調達</div>
+                <div class="article-meta">
+                    <span class="article-comments">644</span>
+                    <span class="article-time">01/16(金) 23:01</span>
+                    
+                </div>
+            </div>
+        </a>
         
-        <article class="article">
-            <div class="source">The Verge - AI</div>
-            <a href="https://www.theverge.com/podcast/863340/siri-is-a-gemini" class="title-en" target="_blank" rel="noopener">
-                Siri is a Gemini
-            </a>
-            
-            <div class="title-ja">Siriは双子座です</div>
-            
-            
-            <p class="summary-en">We know how the next-generation Siri is supposed to work. Apple showed it off in 2024, made commercials about it, and generally promised that AI would change the way we used our gadgets forever. And t...</p>
-            
-            
-            <p class="summary-ja">私たちは次世代の Siri がどのように機能するかを知っています。 Apple は 2024 年にそれを披露し、それに関するコマーシャルを作成し、AI が私たちのガジェットの使用方法を永遠に変えるだろうと一般的に約束しました。そして、...</p>
-            
-            <div class="date">2026-01-16</div>
-        </article>
+        <a href="https://www.theverge.com/podcast/863340/siri-is-a-gemini" class="article" target="_blank" rel="noopener">
+            <div class="article-thumbnail no-image">
+                
+                <span>The Verge - AI</span>
+                
+            </div>
+            <div class="article-content">
+                <div class="article-title">Siriは双子座です</div>
+                <div class="article-meta">
+                    <span class="article-comments">681</span>
+                    <span class="article-time">01/16(金) 23:21</span>
+                    
+                </div>
+            </div>
+        </a>
         
-        <article class="article">
-            <div class="source">The Verge - AI</div>
-            <a href="https://www.theverge.com/column/863319/highlights-musk-v-altman-openai" class="title-en" target="_blank" rel="noopener">
-                ‘Sideshow’ concerns and billionaire dreams: What I learned from Elon Musk’s lawsuit against OpenAI
-            </a>
-            
-            <div class="title-ja">「サイドショー」の懸念と億万長者の夢: OpenAIに対するイーロン・マスクの訴訟から学んだこと</div>
-            
-            
-            <p class="summary-en">This is an excerpt of Sources by Alex Heath, a newsletter about AI and the tech industry, syndicated just for The Verge subscribers once a week. Elon Musk first sued OpenAI in February 2024. Despite O...</p>
-            
-            
-            <p class="summary-ja">これは、The Verge 購読者向けに週に 1 回発行される、AI とテクノロジー業界に関するニュースレター、Alex Heath による Sources の抜粋です。イーロン・マスク氏は2024年2月に初めてOpenAIを訴えた。</p>
-            
-            <div class="date">2026-01-16</div>
-        </article>
+        <a href="https://www.theverge.com/column/863319/highlights-musk-v-altman-openai" class="article" target="_blank" rel="noopener">
+            <div class="article-thumbnail no-image">
+                
+                <span>The Verge - AI</span>
+                
+            </div>
+            <div class="article-content">
+                <div class="article-title">「サイドショー」の懸念と億万長者の夢: OpenAIに対するイーロン・マスクの訴訟から学んだこと</div>
+                <div class="article-meta">
+                    <span class="article-comments">718</span>
+                    <span class="article-time">01/16(金) 22:15</span>
+                    
+                </div>
+            </div>
+        </a>
         
-        <article class="article">
-            <div class="source">TechCrunch - AI</div>
-            <a href="https://techcrunch.com/2026/01/16/the-rise-of-micro-apps-non-developers-are-writing-apps-instead-of-buying-them/" class="title-en" target="_blank" rel="noopener">
-                The rise of ‘micro’ apps: non-developers are writing apps instead of buying them
-            </a>
-            
-            <div class="title-ja">「マイクロ」アプリの台頭: 非開発者がアプリを購入するのではなく作成する</div>
-            
-            
-            <p class="summary-en">A new era of app creation is here. It's fun, it's fast, and it's fleeting.</p>
-            
-            
-            <p class="summary-ja">アプリ作成の新時代が到来しました。楽しくて、あっという間で、あっという間です。</p>
-            
-            <div class="date">2026-01-16</div>
-        </article>
+        <a href="https://techcrunch.com/2026/01/16/the-rise-of-micro-apps-non-developers-are-writing-apps-instead-of-buying-them/" class="article" target="_blank" rel="noopener">
+            <div class="article-thumbnail no-image">
+                
+                <span>TechCrunch - AI</span>
+                
+            </div>
+            <div class="article-content">
+                <div class="article-title">「マイクロ」アプリの台頭: 非開発者がアプリを購入するのではなく作成する</div>
+                <div class="article-meta">
+                    <span class="article-comments">755</span>
+                    <span class="article-time">01/16(金) 23:15</span>
+                    
+                </div>
+            </div>
+        </a>
         
-        <article class="article">
-            <div class="source">TechCrunch - AI</div>
-            <a href="https://techcrunch.com/2026/01/15/anthropic-taps-former-microsoft-india-md-to-lead-bengaluru-expansion/" class="title-en" target="_blank" rel="noopener">
-                Anthropic taps former Microsoft India MD to lead Bengaluru expansion
-            </a>
-            
-            <div class="title-ja">Anthropic、ベンガルールの拡大を主導するために元マイクロソフト・インドMDを起用</div>
-            
-            
-            <p class="summary-en">Irina Ghose joins Anthropic as India managing director after 24 years at Microsoft.</p>
-            
-            
-            <p class="summary-ja">Irina Ghose は、Microsoft で 24 年間勤務した後、インドのマネージング ディレクターとして Anthropic に入社しました。</p>
-            
-            <div class="date">2026-01-16</div>
-        </article>
+        <a href="https://techcrunch.com/2026/01/15/anthropic-taps-former-microsoft-india-md-to-lead-bengaluru-expansion/" class="article" target="_blank" rel="noopener">
+            <div class="article-thumbnail no-image">
+                
+                <span>TechCrunch - AI</span>
+                
+            </div>
+            <div class="article-content">
+                <div class="article-title">Anthropic、ベンガルールの拡大を主導するために元マイクロソフト・インドMDを起用</div>
+                <div class="article-meta">
+                    <span class="article-comments">792</span>
+                    <span class="article-time">01/16(金) 16:28</span>
+                    
+                </div>
+            </div>
+        </a>
         
-        <article class="article">
-            <div class="source">OpenAI Blog</div>
-            <a href="https://openai.com/index/the-truth-elon-left-out" class="title-en" target="_blank" rel="noopener">
-                The truth left out from Elon Musk’s recent court filing
-            </a>
-            
-            <div class="title-ja">イーロン・マスクの最近の裁判所への提出から抜け落ちた真実</div>
-            
-            
-            <p class="summary-en">The truth left out from Elon Musk’s recent court filing.</p>
-            
-            
-            <p class="summary-ja">イーロン・マスク氏の最近の裁判所への提出からは抜け落ちた真実。</p>
-            
-            <div class="date">2026-01-16</div>
-        </article>
-        
-        <article class="article">
-            <div class="source">OpenAI Blog</div>
-            <a href="https://openai.com/index/introducing-chatgpt-go" class="title-en" target="_blank" rel="noopener">
-                Introducing ChatGPT Go, now available worldwide
-            </a>
-            
-            <div class="title-ja">ChatGPT Go の紹介、世界中で利用可能に</div>
-            
-            
-            <p class="summary-en">ChatGPT Go is now available worldwide, offering expanded access to GPT-5.2 Instant, higher usage limits, and longer memory—making advanced AI more affordable globally.</p>
-            
-            
-            <p class="summary-ja">ChatGPT Go は現在世界中で利用可能であり、GPT-5.2 Instant へのアクセスの拡張、より高い使用制限、より長いメモリを提供し、高度な AI を世界中でより手頃な価格にしています。</p>
-            
-            <div class="date">2026-01-16</div>
-        </article>
-        
-        <article class="article">
-            <div class="source">OpenAI Blog</div>
-            <a href="https://openai.com/index/our-approach-to-advertising-and-expanding-access" class="title-en" target="_blank" rel="noopener">
-                Our approach to advertising and expanding access to ChatGPT
-            </a>
-            
-            <div class="title-ja">ChatGPT へのアクセスを宣伝し拡大するための当社のアプローチ</div>
-            
-            
-            <p class="summary-en">OpenAI plans to test advertising in the U.S. for ChatGPT’s free and Go tiers to expand affordable access to AI worldwide, while protecting privacy, trust, and answer quality.</p>
-            
-            
-            <p class="summary-ja">OpenAI は、プライバシー、信頼、回答の品質を保護しながら、世界中で AI への手頃な価格のアクセスを拡大するために、米国で ChatGPT の無料層と Go 層の広告をテストする予定です。</p>
-            
-            <div class="date">2026-01-16</div>
-        </article>
+        <a href="https://openai.com/index/the-truth-elon-left-out" class="article" target="_blank" rel="noopener">
+            <div class="article-thumbnail no-image">
+                
+                <span>OpenAI Blog</span>
+                
+            </div>
+            <div class="article-content">
+                <div class="article-title">イーロン・マスクの最近の裁判所への提出から抜け落ちた真実</div>
+                <div class="article-meta">
+                    <span class="article-comments">829</span>
+                    <span class="article-time">01/16(金) 21:00</span>
+                    
+                </div>
+            </div>
+        </a>
         
         
     </main>
 
     <footer>
-        AI News Daily - 毎朝6時自動更新
+        AI News - 毎朝6時自動更新
     </footer>
 </body>
 </html>
